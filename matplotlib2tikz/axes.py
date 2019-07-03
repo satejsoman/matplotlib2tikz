@@ -42,13 +42,23 @@ class Axes(object):
 
         # get axes titles
         xlabel = obj.get_xlabel()
+        xrotation = obj.xaxis.get_label().get_rotation()
         if xlabel:
             xlabel = mpl_backend_pgf.common_texification(xlabel)
             self.axis_options.append(u"xlabel={{{}}}".format(xlabel))
+            if xrotation != 0:
+                self.axis_options.append(
+                    u"xlabel style={{rotate={}}}".format(xrotation - 90)
+                )
         ylabel = obj.get_ylabel()
+        yrotation = obj.yaxis.get_label().get_rotation()
         if ylabel:
             ylabel = mpl_backend_pgf.common_texification(ylabel)
             self.axis_options.append(u"ylabel={{{}}}".format(ylabel))
+            if yrotation != 90:
+                self.axis_options.append(
+                    u"ylabel style={{rotate={}}}".format(yrotation - 90)
+                )
 
         # Axes limits.
         # Sort the limits so make sure that the smaller of the two is actually *min.
@@ -505,8 +515,8 @@ class Axes(object):
 def _get_tick_position(obj, axes_obj):
     major_ticks = obj.xaxis.majorTicks if axes_obj == "x" else obj.yaxis.majorTicks
 
-    major_ticks_bottom = [tick.tick1On for tick in major_ticks]
-    major_ticks_top = [tick.tick2On for tick in major_ticks]
+    major_ticks_bottom = [tick.tick1line.get_visible() for tick in major_ticks]
+    major_ticks_top = [tick.tick2line.get_visible() for tick in major_ticks]
 
     major_ticks_bottom_show_all = False
     if len(set(major_ticks_bottom)) == 1 and major_ticks_bottom[0] is True:
